@@ -29,6 +29,7 @@ import model.services.DepartmentService;
 public class DepartmentListController implements Initializable {
 
     private DepartmentService service;
+    private ObservableList<Department> obsList;    
     
     @FXML
     private TableView<Department> tableViewDepartment;
@@ -42,7 +43,6 @@ public class DepartmentListController implements Initializable {
     @FXML
     private Button btnNew;
     
-    private ObservableList<Department> obsList;
     
     public void setDepartmentService(DepartmentService service ) {
         this.service = service;

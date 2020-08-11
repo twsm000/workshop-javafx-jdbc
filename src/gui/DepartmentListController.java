@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import application.Main;
+import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
@@ -26,7 +27,7 @@ import javafx.stage.Stage;
 import model.entities.Department;
 import model.services.DepartmentService;
 
-public class DepartmentListController implements Initializable {
+public class DepartmentListController implements Initializable, DataChangeListener {
 
     private static final String DEPARTMENT_FORM_PATH = "/gui/DepartmentForm.fxml";
     private DepartmentService service;
@@ -52,7 +53,7 @@ public class DepartmentListController implements Initializable {
     public void onBtnNewAction(ActionEvent event) {
         Department department = new Department();
         Stage stage = Utils.currentStage(event);
-        this.createDialogForm(department, DEPARTMENT_FORM_PATH, stage);
+        createDialogForm(department, DEPARTMENT_FORM_PATH, stage);
     }
 
     @Override
@@ -86,6 +87,7 @@ public class DepartmentListController implements Initializable {
             DepartmentFormController controller = loader.getController();
             controller.setDepartment(department);
             controller.setService(new DepartmentService());
+            controller.subscribeDataChangeListener(this);
             
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Enter department data");
@@ -94,9 +96,13 @@ public class DepartmentListController implements Initializable {
             dialogStage.initOwner(parentStage);
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.showAndWait();
-
         } catch (IOException e) {
             Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
         }
+    }
+
+    @Override
+    public void onDataChange() {
+        updateTableView();
     }
 }

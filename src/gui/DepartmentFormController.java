@@ -3,7 +3,9 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import db.DbException;
 import gui.listeners.DataChangeListener;
@@ -13,11 +15,12 @@ import gui.util.Utils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import model.entities.Department;
+import model.exceptions.ValidationException;
 import model.services.DepartmentService;
 
 public class DepartmentFormController implements Initializable {
@@ -62,7 +65,11 @@ public class DepartmentFormController implements Initializable {
             service.saveOrUpdate(department);
             notifyDataChangeListeners();
             Utils.currentStage(event).close();
-        } catch (DbException e) {
+        }
+        catch (ValidationException e) {
+            setErrorMessages(e.getErrors());
+        }
+        catch (DbException e) {
             Alerts.showAlert("Error saving department", null, e.getMessage(), AlertType.ERROR);
         }
     }
@@ -80,12 +87,25 @@ public class DepartmentFormController implements Initializable {
     }
 
     private Department getFormData() {
-        Department department = new Department();
-        department.setId(Utils.tryStrToInt(txtFieldId.getText()));
+        this.validateData();
+
+        Department department = new Department();        
+        department.setId(Utils.tryStrToInt(txtFieldId.getText()));        
         department.setName(txtFieldName.getText());
         return department;
     }
     
+    private void validateData() {
+        ValidationException exception = new ValidationException("Validation error");
+        if (Utils.IsNullOrBlank(txtFieldName.getText())) {
+            exception.addError("Name", "Field can't be empty");
+        }
+        
+        if (exception.hasErrors()) {
+            throw exception;
+        }
+    }
+
     private void notifyDataChangeListeners() {
         for (DataChangeListener listener : dataChangeListeners) {
             listener.onDataChange();
@@ -111,5 +131,13 @@ public class DepartmentFormController implements Initializable {
         this.validateDepartment();
         txtFieldId.setText(String.valueOf(department.getId()));
         txtFieldName.setText(department.getName());
+    }
+    
+    public void setErrorMessages(Map<String, String> errors) {
+        Set<String> fields = errors.keySet();
+        
+        if (fields.contains("Name")) {
+            labelErrorName.setText(errors.get("Name"));
+        }
     }
 }

@@ -19,4 +19,12 @@ public class Utils {
         }
     }
 
+    public static boolean IsNullOrBlank(String value) {
+        return value == null || value.isBlank();
+    }
+    
+    public static boolean IsNullOrEmpty(String value) {
+        return value == null || value.isEmpty();
+    }    
+
 }

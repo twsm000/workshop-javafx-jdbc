@@ -9,6 +9,7 @@ import application.Main;
 import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.Scene;
@@ -41,6 +43,9 @@ public class DepartmentListController implements Initializable, DataChangeListen
 
     @FXML
     private TableColumn<Department, String> tableColumnName;
+
+    @FXML
+    private TableColumn<Department, Department> tableColumnEDIT;
 
     @FXML
     private Button btnNew;
@@ -77,18 +82,20 @@ public class DepartmentListController implements Initializable, DataChangeListen
         List<Department> list = service.findAll();
         obsList = FXCollections.observableArrayList(list);
         tableViewDepartment.setItems(obsList);
+        initEditButtons();
     }
 
     private void createDialogForm(Department department, String absolutName, Stage parentStage) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(absolutName));
-            Pane pane = loader.load();           
-            
+            Pane pane = loader.load();
+
             DepartmentFormController controller = loader.getController();
             controller.setDepartment(department);
             controller.setService(new DepartmentService());
             controller.subscribeDataChangeListener(this);
-            
+            controller.updateFormData();
+
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Enter department data");
             dialogStage.setScene(new Scene(pane));
@@ -104,5 +111,25 @@ public class DepartmentListController implements Initializable, DataChangeListen
     @Override
     public void onDataChange() {
         updateTableView();
+    }
+
+    private void initEditButtons() {
+        tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+        tableColumnEDIT.setCellFactory(param -> new TableCell<Department, Department>() {
+            private final Button btn = new Button("EDIT");
+
+            @Override
+            protected void updateItem(Department department, boolean empty) {
+                super.updateItem(department, empty);
+
+                if (Utils.isNull(department)) {
+                    setGraphic(null);
+                    return;
+                }
+
+                setGraphic(btn);
+                btn.setOnAction(event -> createDialogForm(department, DEPARTMENT_FORM_PATH, Utils.currentStage(event)));
+            }
+        });
     }
 }

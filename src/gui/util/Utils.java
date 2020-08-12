@@ -18,13 +18,17 @@ public class Utils {
             return null;
         }
     }
+    
+    public static boolean isNull(Object obj) {
+        return obj == null;
+    }        
 
     public static boolean IsNullOrBlank(String value) {
-        return value == null || value.isBlank();
+        return isNull(value) || value.isBlank();
     }
     
     public static boolean IsNullOrEmpty(String value) {
-        return value == null || value.isEmpty();
-    }    
+        return isNull(value) || value.isEmpty();
+    }
 
 }

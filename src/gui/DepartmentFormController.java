@@ -61,7 +61,7 @@ public class DepartmentFormController implements Initializable {
         this.validateService();
         
         try {
-            department = this.getFormData();
+            department = getFormData();
             service.saveOrUpdate(department);
             notifyDataChangeListeners();
             Utils.currentStage(event).close();
@@ -75,13 +75,13 @@ public class DepartmentFormController implements Initializable {
     }
 
     private void validateDepartment() {
-        if (department == null) {
+        if (Utils.isNull(department)) {
             throw new IllegalStateException("Department was not defined!");
         }        
     }
     
     private void validateService() {
-        if (service == null) {
+        if (Utils.isNull(service)) {
             throw new IllegalStateException("Service was not defined!");
         }
     }
@@ -118,8 +118,7 @@ public class DepartmentFormController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-        this.initializeNodes();
+        initializeNodes();
     }
 
     private void initializeNodes() {

@@ -1,8 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -17,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Seller;
@@ -34,9 +38,27 @@ public class SellerFormController implements Initializable {
 
     @FXML
     private TextField txtFieldName;
+    
+    @FXML 
+    private TextField txtFieldEmail;
+    
+    @FXML
+    private DatePicker dtpFieldBirthDate;
+    
+    @FXML 
+    private TextField txtFieldBaseSalary;
 
     @FXML
     private Label labelErrorName;
+    
+    @FXML
+    private Label labelErrorEmail;
+    
+    @FXML
+    private Label labelErrorBirthDate;
+    
+    @FXML
+    private Label labelErrorBaseSalary;
 
     @FXML
     private Button btbSave;
@@ -124,12 +146,21 @@ public class SellerFormController implements Initializable {
     private void initializeNodes() {
         Constraints.setTextFieldInteger(txtFieldId);
         Constraints.setTextFieldMaxLength(txtFieldName, 30);
+        Constraints.setTextFieldDouble(txtFieldBaseSalary);
+        Constraints.setTextFieldMaxLength(txtFieldEmail, 60);
+        Utils.formatDatePicker(dtpFieldBirthDate, "dd/MM/yyyy");
     }
 
     public void updateFormData() {
         this.validateSeller();
         txtFieldId.setText(String.valueOf(entity.getId()));
         txtFieldName.setText(entity.getName());
+        txtFieldEmail.setText(entity.getEmail());
+        if (!Utils.isNull(entity.getBirthDate())) {
+            dtpFieldBirthDate.setValue(LocalDate.ofInstant(entity.getBirthDate().toInstant(), ZoneId.systemDefault()));
+        }
+        Locale.setDefault(Locale.US);
+        txtFieldBaseSalary.setText(String.format("%.2f", entity.getBaseSalary()));
     }
     
     public void setErrorMessages(Map<String, String> errors) {

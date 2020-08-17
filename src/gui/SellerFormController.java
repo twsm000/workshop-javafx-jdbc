@@ -1,14 +1,15 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import db.DbException;
 import gui.listeners.DataChangeListener;
@@ -37,6 +38,7 @@ import model.services.SellerService;
 
 public class SellerFormController implements Initializable {
 
+    private static final String DEFAULT_MESSAGE_EMPTY_FIELD = "Field can't be empty";
     private Seller entity;
     private SellerService service;
     private DepartmentService departmentService;
@@ -93,8 +95,8 @@ public class SellerFormController implements Initializable {
     }
 
     public void onButtonSaveAction(ActionEvent event) {
-        this.validateSeller();
-        this.validateServices();
+        validateSeller();
+        validateServices();
 
         try {
             entity = getFormData();
@@ -128,13 +130,29 @@ public class SellerFormController implements Initializable {
         Seller entity = new Seller();
         entity.setId(Utils.tryStrToInt(txtFieldId.getText()));
         entity.setName(txtFieldName.getText());
+        entity.setEmail(txtFieldEmail.getText());        
+        Instant instant = Instant.from(dtpFieldBirthDate.getValue().atStartOfDay(ZoneId.systemDefault()));
+        entity.setBirthDate(Date.from(instant));
+        entity.setBaseSalary(Utils.tryStrToDouble(txtFieldBaseSalary.getText()));
+        entity.setDepartment(cbxDepartment.getValue());
+        
         return entity;
     }
 
     private void validateData() {
         ValidationException exception = new ValidationException("Validation error");
-        if (Utils.IsNullOrBlank(txtFieldName.getText())) {
-            exception.addError("Name", "Field can't be empty");
+
+        if (Utils.isNullOrBlank(txtFieldName.getText())) {
+            exception.addError("name", DEFAULT_MESSAGE_EMPTY_FIELD);
+        }
+        if (Utils.isNullOrBlank(txtFieldEmail.getText())) {
+            exception.addError("email", DEFAULT_MESSAGE_EMPTY_FIELD);
+        }
+        if (Utils.isNull(dtpFieldBirthDate.getValue())) {
+            exception.addError("birthDate", DEFAULT_MESSAGE_EMPTY_FIELD);
+        }
+        if (Utils.isNullOrBlank(txtFieldBaseSalary.getText())) {
+            exception.addError("baseSalary", DEFAULT_MESSAGE_EMPTY_FIELD);
         }
 
         if (exception.hasErrors()) {
@@ -163,17 +181,22 @@ public class SellerFormController implements Initializable {
         Constraints.setTextFieldDouble(txtFieldBaseSalary);
         Constraints.setTextFieldMaxLength(txtFieldEmail, 60);
         Utils.formatDatePicker(dtpFieldBirthDate, "dd/MM/yyyy");
+
         initializeComboBoxDepartment();
     }
 
     public void updateFormData() {
-        this.validateSeller();
+        validateSeller();
+
         txtFieldId.setText(String.valueOf(entity.getId()));
         txtFieldName.setText(entity.getName());
         txtFieldEmail.setText(entity.getEmail());
+
         if (!Utils.isNull(entity.getBirthDate())) {
-            dtpFieldBirthDate.setValue(LocalDate.ofInstant(entity.getBirthDate().toInstant(), ZoneId.systemDefault()));
+            LocalDate ld = LocalDate.ofInstant(entity.getBirthDate().toInstant(), ZoneId.systemDefault());
+            dtpFieldBirthDate.setValue(ld);
         }
+
         Locale.setDefault(Locale.US);
         txtFieldBaseSalary.setText(String.format("%.2f", entity.getBaseSalary()));
 
@@ -185,15 +208,15 @@ public class SellerFormController implements Initializable {
     }
 
     public void setErrorMessages(Map<String, String> errors) {
-        Set<String> fields = errors.keySet();
-
-        if (fields.contains("Name")) {
-            labelErrorName.setText(errors.get("Name"));
-        }
+        labelErrorName.setText(errors.get("name"));
+        labelErrorEmail.setText(errors.get("email"));
+        labelErrorBirthDate.setText(errors.get("birthDate"));
+        labelErrorBaseSalary.setText(errors.get("baseSalary"));
     }
 
     public void loadAssociatedObjects() {
-        this.validateServices();
+        validateServices();
+
         List<Department> list = departmentService.findAll();
         obsListDepartment = FXCollections.observableArrayList(list);
         cbxDepartment.setItems(obsListDepartment);

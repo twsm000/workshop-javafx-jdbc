@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.DatePicker;
@@ -33,11 +35,11 @@ public class Utils {
         return obj == null;
     }
 
-    public static boolean IsNullOrBlank(String value) {
+    public static boolean isNullOrBlank(String value) {
         return isNull(value) || value.isBlank();
     }
 
-    public static boolean IsNullOrEmpty(String value) {
+    public static boolean isNullOrEmpty(String value) {
         return isNull(value) || value.isEmpty();
     }
 
@@ -83,27 +85,47 @@ public class Utils {
     public static void formatDatePicker(DatePicker datePicker, String format) {
         datePicker.setConverter(new StringConverter<LocalDate>() {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(format);
-            {
-                datePicker.setPromptText(format.toLowerCase());
-            }
 
             @Override
             public String toString(LocalDate date) {
                 if (Utils.isNull(date)) {
                     return "";
-                } else {
-                    return dateFormatter.format(date);
                 }
+
+                return dateFormatter.format(date);
             }
 
             @Override
             public LocalDate fromString(String string) {
-                if (Utils.IsNullOrBlank(string)) {
+                if (Utils.isNullOrBlank(string)) {
                     return null;
-                } else {
-                    return LocalDate.parse(string, dateFormatter);
+                }
+
+                return LocalDate.parse(string, dateFormatter);
+            }
+        });
+
+        datePicker.setPromptText(format.toLowerCase());
+
+        //This deals with the bug located here where the datepicker value is not updated on focus lost
+        //https://bugs.openjdk.java.net/browse/JDK-8092295?page=com.atlassian.jira.plugin.system.issuetabpanels:all-tabpanel        
+        datePicker.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (!newValue) {
+                    String value = datePicker.getEditor().getText();
+                    LocalDate date = datePicker.getConverter().fromString(value); 
+                    datePicker.setValue(date);
                 }
             }
         });
+    }
+
+    public static Double tryStrToDouble(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

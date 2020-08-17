@@ -34,40 +34,58 @@
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin></Label>
+            <TextField fx:id="txtFieldId" editable="false" prefHeight="25.0" prefWidth="182.0" GridPane.columnIndex="1" />
             <Label text="Name" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin></Label>
-            <TextField fx:id="txtFieldId" editable="false" prefHeight="25.0" prefWidth="182.0" GridPane.columnIndex="1" />
             <TextField fx:id="txtFieldName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label fx:id="labelErrorName" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <HBox prefHeight="46.0" prefWidth="272.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
-               <children>
-                  <Button fx:id="btbSave" mnemonicParsing="false" onAction="#onButtonSaveAction" prefHeight="25.0" prefWidth="60.0" text="Save" textAlignment="CENTER" />
-                  <Button fx:id="btbCancel" mnemonicParsing="false" onAction="#onButtonCancelAction" prefHeight="25.0" prefWidth="60.0" text="Cancel" textAlignment="CENTER" />
-               </children>
-            </HBox>
+            <Label fx:id="labelErrorName" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin></Label>
             <Label text="Email" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin>
             </Label>
+            <TextField fx:id="txtFieldEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="labelErrorEmail" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin></Label>
             <Label text="Birth date" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin>
             </Label>
+            <DatePicker fx:id="dtpFieldBirthDate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label fx:id="labelErrorBirthDate" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="3">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin></Label>
             <Label text="Base salary" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin>
             </Label>
-            <TextField fx:id="txtFieldEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="txtFieldBaseSalary" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <DatePicker fx:id="dtpFieldBirthDate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Label fx:id="labelErrorEmail" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <Label fx:id="labelErrorBirthDate" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <Label fx:id="labelErrorBaseSalary" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <Label fx:id="labelErrorBaseSalary" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="4">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin></Label>
             <Label text="Department" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
                <GridPane.margin>
                   <Insets right="5.0" />
@@ -78,6 +96,12 @@
                   <Insets />
                </opaqueInsets>
             </ComboBox>
+            <HBox prefHeight="46.0" prefWidth="272.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+               <children>
+                  <Button fx:id="btbSave" mnemonicParsing="false" onAction="#onButtonSaveAction" prefHeight="25.0" prefWidth="60.0" text="Save" textAlignment="CENTER" />
+                  <Button fx:id="btbCancel" mnemonicParsing="false" onAction="#onButtonCancelAction" prefHeight="25.0" prefWidth="60.0" text="Cancel" textAlignment="CENTER" />
+               </children>
+            </HBox>
          </children>
       </GridPane>
    </children>

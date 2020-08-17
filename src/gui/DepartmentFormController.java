@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import db.DbException;
 import gui.listeners.DataChangeListener;
@@ -24,6 +23,8 @@ import model.exceptions.ValidationException;
 import model.services.DepartmentService;
 
 public class DepartmentFormController implements Initializable {
+
+    private static final String DEFAULT_MESSAGE_EMPTY_FIELD = "Field can't be empty";
 
     private Department department;
     private DepartmentService service;
@@ -51,25 +52,23 @@ public class DepartmentFormController implements Initializable {
     public void setService(DepartmentService service) {
         this.service = service;
     }
-    
+
     public void subscribeDataChangeListener(DataChangeListener listener) {
         this.dataChangeListeners.add(listener);
     }
 
     public void onButtonSaveAction(ActionEvent event) {
-        this.validateDepartment();
-        this.validateService();
-        
+        validateDepartment();
+        validateService();
+
         try {
             department = getFormData();
             service.saveOrUpdate(department);
             notifyDataChangeListeners();
             Utils.currentStage(event).close();
-        }
-        catch (ValidationException e) {
+        } catch (ValidationException e) {
             setErrorMessages(e.getErrors());
-        }
-        catch (DbException e) {
+        } catch (DbException e) {
             Alerts.showAlert("Error saving department", null, e.getMessage(), AlertType.ERROR);
         }
     }
@@ -77,9 +76,9 @@ public class DepartmentFormController implements Initializable {
     private void validateDepartment() {
         if (Utils.isNull(department)) {
             throw new IllegalStateException("Department was not defined!");
-        }        
+        }
     }
-    
+
     private void validateService() {
         if (Utils.isNull(service)) {
             throw new IllegalStateException("Service was not defined!");
@@ -87,20 +86,21 @@ public class DepartmentFormController implements Initializable {
     }
 
     private Department getFormData() {
-        this.validateData();
+        validateData();
 
-        Department department = new Department();        
-        department.setId(Utils.tryStrToInt(txtFieldId.getText()));        
+        Department department = new Department();
+        department.setId(Utils.tryStrToInt(txtFieldId.getText()));
         department.setName(txtFieldName.getText());
+
         return department;
     }
-    
+
     private void validateData() {
         ValidationException exception = new ValidationException("Validation error");
-        if (Utils.IsNullOrBlank(txtFieldName.getText())) {
-            exception.addError("Name", "Field can't be empty");
+        if (Utils.isNullOrBlank(txtFieldName.getText())) {
+            exception.addError("name", DEFAULT_MESSAGE_EMPTY_FIELD);
         }
-        
+
         if (exception.hasErrors()) {
             throw exception;
         }
@@ -110,7 +110,7 @@ public class DepartmentFormController implements Initializable {
         for (DataChangeListener listener : dataChangeListeners) {
             listener.onDataChange();
         }
-    }    
+    }
 
     public void onButtonCancelAction(ActionEvent event) {
         Utils.currentStage(event).close();
@@ -127,16 +127,13 @@ public class DepartmentFormController implements Initializable {
     }
 
     public void updateFormData() {
-        this.validateDepartment();
+        validateDepartment();
+
         txtFieldId.setText(String.valueOf(department.getId()));
         txtFieldName.setText(department.getName());
     }
-    
+
     public void setErrorMessages(Map<String, String> errors) {
-        Set<String> fields = errors.keySet();
-        
-        if (fields.contains("Name")) {
-            labelErrorName.setText(errors.get("Name"));
-        }
+        labelErrorName.setText(errors.get("name"));
     }
 }
